@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('peminjaman', function (Blueprint $table) {
             $table->string('peminjaman_id', 20)->primary();
-            $table->string('siswa_id', 20)->nullable();
-            $table->string('user_id', 10)->nullable();
+            $table->unsignedBigInteger('siswa_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->date('tanggal_pinjam')->nullable();
             $table->dateTime('harus_kembali_tgl')->nullable();
             $table->timestamps();

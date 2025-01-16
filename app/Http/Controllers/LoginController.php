@@ -20,22 +20,17 @@ class LoginController extends Controller
 
         // Verifikasi password dengan MD5
         if ($user && md5($request->user_pass) === $user->user_pass) {
-            if ($user->user_sts === '1') { // Periksa apakah user aktif
-                Auth::login($user);
+            // Login pengguna
+            Auth::login($user);
 
-                // Membuat token Sanctum
-                $token = $user->createToken('token')->plainTextToken;
+            // Membuat token Sanctum
+            $token = $user->createToken('token')->plainTextToken;
 
-                return response()->json([
-                    'message' => 'Login berhasil',
-                    'token' => $token,
-                    'user' => $user,
-                ], 200);
-            } else {
-                return response()->json([
-                    'message' => 'User tidak aktif',
-                ], 400);
-            }
+            return response()->json([
+                'message' => 'Login berhasil',
+                'token' => $token,
+                'user' => $user,
+            ], 200);
         } else {
             return response()->json([
                 'message' => 'Nama pengguna atau Password salah',
@@ -45,6 +40,7 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        // Hapus token akses saat ini
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([

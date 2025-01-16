@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tr_jenis_barang', function (Blueprint $table) {
-            $table->string('jns_brg_kode', 5)->primary();
-            $table->string('jns_brg_nama', 50)->nullable();
+        Schema::create('asal', function (Blueprint $table) {
+            $table->bigIncrements('asal_id')->primary;
+            $table->string('asal_barang', 50)->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tr_jenis_barang');
+        Schema::dropIfExists('asal');
     }
 };

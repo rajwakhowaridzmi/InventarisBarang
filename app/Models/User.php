@@ -12,13 +12,12 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable // Mengubah kelas menjadi Authenticatable
 {
     use HasApiTokens, HasFactory; 
-    protected $table = 'tm_user';
+    protected $table = 'user';
     protected $primaryKey = 'user_id';
     protected $fillable = [
         'user_nama',
         'user_pass',
-        'user_hak',
-        'user_sts',
+        'role',
     ];
 
     // Tentukan kolom yang disembunyikan (seperti password) saat dikembalikan dalam JSON
@@ -46,4 +45,8 @@ class User extends Authenticatable // Mengubah kelas menjadi Authenticatable
     // {
     //     return $this->createToken($name)->plainTextToken; // Memperbaiki pembuatan token
     // }
+    public function barangInventaris()
+    {
+        return $this->hasMany(BarangInventaris::class, 'user_id', 'user_id');
+    }
 }
