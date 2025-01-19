@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('pengembalian_id', 20)->primary();
             $table->string('peminjaman_id', 20)->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->dateTime('kembali_tanggall')->nullable();
+            $table->dateTime('tanggal_kembali')->nullable();
             $table->enum('kembali_status', ['0', '1'])->nullable();
             $table->timestamps();
 

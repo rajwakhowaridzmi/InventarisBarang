@@ -11,6 +11,7 @@ use App\Http\Controllers\JenisBarangController;
 use App\Http\Controllers\PeminjamanBarangController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\PengembalianController;
 use App\Http\Controllers\SiswaController;
 
 // Route::get('/user', function (Request $request) {
@@ -21,13 +22,6 @@ use App\Http\Controllers\SiswaController;
 // Rute untuk login, logout, dan signup
 Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout'])->middleware('auth:sanctum');  // Gunakan Sanctum middleware untuk logout
-
-// Rute untuk mengelola barang
-Route::middleware('auth:sanctum')->post('/barang/store', [BarangController::class, 'store']);
-
-Route::post('/peminjaman/store', [PeminjamanController::class, 'store'])->middleware('auth:api');
-
-Route::post('/peminjaman-barang', [PeminjamanBarangController::class, 'store'])->middleware('auth:api');
 
 
 Route::middleware('auth:sanctum')->prefix('jurusan')->group(function () {
@@ -78,3 +72,26 @@ Route::middleware('auth:sanctum')->prefix('barang-inventaris')->group(function()
     Route::delete('/delete/{barang_kode}', [BarangInventarisController::class, 'destroy']);
 });
 
+Route::middleware('auth:sanctum')->prefix('peminjaman')->group(function(){
+    Route::post('/create', [PeminjamanController::class, 'store']);
+    Route::get('/read', [PeminjamanController::class, 'index']); 
+    Route::get('/read/{id}', [PeminjamanController::class, 'show']); 
+    Route::put('/update/{id}', [PeminjamanController::class, 'update']); 
+    Route::delete('/delete/{id}', [PeminjamanController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->prefix('pengembalian')->group(function(){
+    Route::post('/create', [PengembalianController::class, 'store']);
+    Route::get('/read', [PengembalianController::class, 'index']); 
+    Route::get('/read/{id}', [PengembalianController::class, 'show']); 
+    Route::put('/update/{id}', [PengembalianController::class, 'update']); 
+    Route::delete('/delete/{id}', [PengembalianController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->prefix('peminjaman-barang')->group(function(){
+    Route::post('/create', [PeminjamanBarangController::class, 'store']);
+    Route::get('/read', [PeminjamanBarangController::class, 'index']);
+    Route::get('/read/{id}', [PeminjamanBarangController::class, 'show']);
+    Route::put('/update/{id}', [PeminjamanBarangController::class, 'update']);
+    Route::delete('/delete/{id}', [PeminjamanBarangController::class, 'destroy']);
+});

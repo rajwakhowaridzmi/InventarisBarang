@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('peminjaman_id', 20)->nullable();
             $table->string('barang_kode', 12)->nullable();
             // $table->dateTime('pdb_tgl')->nullable();
-            $table->string('status_pmj', 2)->nullable();    
+            $table->enum('status_pmj', [0, 1])->nullable();    
             $table->timestamps();
 
             $table->foreign('peminjaman_id')->references('peminjaman_id')->on('peminjaman')->onDelete('cascade');

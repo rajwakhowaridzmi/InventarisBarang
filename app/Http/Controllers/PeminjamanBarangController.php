@@ -2,43 +2,91 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PeminjamanBarang;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PeminjamanBarangController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
-            'pb_id' => 'required|exists:tm_peminjaman,pb_id',
-            'br_kode' => 'required|exists:tm_barang_inventaris,br_kode',
+            'peminjaman_id' => 'required|exists:peminjaman,peminjaman_id',
+            'barang_kode' => 'required|exists:barang_inventaris,barang_kode',
+            'status_pmj' => 'nullable|in:0,1',
         ]);
 
-        $thn_sekarang = Carbon::now()->format('Y');
-        $bln_sekarang = Carbon::now()->format('m');
+        $peminjaman_id = $request->peminjaman_id;
+        $noPeminjamanBarang = DB::table('peminjaman_barang')
+            ->where('peminjaman_id', $peminjaman_id)
+            ->count() + 1;
 
-        $no_urut = DB::table('td_peminjaman_barang')
-        ->selectRaw("IFNULL(MAX(SUBSTRING(pbd_id, 10, 3)), 0) + 1 AS no_urut")
-            ->whereRaw("SUBSTRING(pbd_id, 4, 4) = ?", [$thn_sekarang])
-            ->whereRaw("SUBSTRING(pbd_id, 8, 2) = ?", [$bln_sekarang])
-            ->value('no_urut');
+        $noPeminjamanBarang = str_pad($noPeminjamanBarang, 3, '0', STR_PAD_LEFT);
+        $pjm_barang_id = $peminjaman_id . $noPeminjamanBarang;
 
-        $no_urut_padded = str_pad($no_urut, 3, '0', STR_PAD_LEFT);
-        $pbd_id = 'PJBR' . $thn_sekarang . $bln_sekarang . $no_urut_padded;
-
-        DB::table('td_peminjaman_barang')->insert([
-            'pbd_id' => $pbd_id,
-            'pb_id' => $request->input('pb_id'),
-            'br_kode' => $request->input('br_kode'),
-            'pdb_tgl' => Carbon::now(),
-            'pdb_sts' => '1',
+        DB::table('peminjaman_barang')->insert([
+            'pjm_barang_id' => $pjm_barang_id,
+            'peminjaman_id' => $request->peminjaman_id,
+            'barang_kode' => $request->barang_kode,
+            'status_pmj' => $request->status_pmj,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
+
+        $dataPeminjamanBarang = DB::table('peminjaman_barang')->get();
+        return response()->json([
+            'message' => 'Peminjaman barang berhasil ditambahkan',
+            'data' => $dataPeminjamanBarang,
+        ], 201);
+    }
+
+    public function index()
+    {
+        $peminjamanBarang = PeminjamanBarang::with(['peminjaman', 'barangInventaris'])->get();
+        return response()->json($peminjamanBarang);
+    }
+    public function show($id)
+    {
+        $peminjamanBarang = PeminjamanBarang::find($id);
+
+        if (!$peminjamanBarang) {
+            return response()->json(['message' => 'Peminjaman barang tidak ditemukan'], 404);
+        }
+
+        return response()->json($peminjamanBarang);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $peminjamanBarang = PeminjamanBarang::find($id);
+
+        if (!$peminjamanBarang) {
+            return response()->json(['message' => 'Peminjaman barang tidak ditemukan'], 404);
+        }
+
+        $request->validate([
+            'barang_kode' => 'required|exists:barang_inventaris,barang_kode',
+            'status_pmj' => 'nullable|in:0,1',
+        ]);
+
+        $peminjamanBarang->update($request->only(['barang_kode', 'status_pmj']));
 
         return response()->json([
-            'message' => 'Data peminjaman barang berhasil ditambahkan',
-            'pbd_id' => $pbd_id,
-            'pb_id' => $request->input('pb_id'),
-            'br_kode' => $request->input('br_kode'),
-        ], 201);
+            'message' => 'Peminjaman barang berhasil diperbarui',
+            'data' => $peminjamanBarang,
+        ]);
+    }
+    public function destroy($id)
+    {
+        $peminjamanBarang = PeminjamanBarang::find($id);
+
+        if (!$peminjamanBarang) {
+            return response()->json(['message' => 'Peminjaman barang tidak ditemukan'], 404);
+        }
+
+        $peminjamanBarang->delete();
+
+        return response()->json(['message' => 'Peminjaman barang berhasil dihapus']);
     }
 }

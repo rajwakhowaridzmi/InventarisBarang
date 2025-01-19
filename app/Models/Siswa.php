@@ -24,10 +24,16 @@ class Siswa extends Model
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
     }
-    
+
 
     public function jurusan()
     {
         return $this->belongsTo(Jurusan::class, 'jurusan_id');
     }
+    public function peminjaman()
+{
+    return $this->hasMany(Peminjaman::class, 'siswa_id');
+}
+
+    
 }

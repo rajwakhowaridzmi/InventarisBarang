@@ -49,4 +49,9 @@ class User extends Authenticatable // Mengubah kelas menjadi Authenticatable
     {
         return $this->hasMany(BarangInventaris::class, 'user_id', 'user_id');
     }
+    public function peminjaman()
+    {
+        return $this->hasMany(Peminjaman::class, 'user_id');
+    }
+    
 }

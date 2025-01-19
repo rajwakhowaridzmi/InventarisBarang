@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Peminjaman;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -9,46 +11,95 @@ class PeminjamanController extends Controller
 {
     public function store(Request $request)
     {
-        $user = $request->user();
-        if (!$user) {
-            return response()->json(['message' => 'User tidak terautentikasi'], 401);
-        }
-
-        $validated = $request->validate([
-            'pb_tgl' => 'required|date',
-            'pb_no_siswa' => 'required|string|max:20',
-            'pb_nama_siswa' => 'required|string|max:100',
-            'pb_harus_kembali_tgl' => 'required|date',
-            'pb_stat' => 'required|string|max:2',
+        $request->validate([
+            'siswa_id' => 'required|exists:siswa,siswa_id',
+            // 'user_id' => 'required|exists:user,id',
+            'tanggal_pinjam' => 'required|date',
+            'harus_kembali_tgl' => 'required|date|after_or_equal:tanggal_pinjam',
         ]);
 
-        $thn_sekarang = Carbon::now()->format('Y');
-        $bln_sekarang = Carbon::now()->format('m');
-
-        $no_urut = DB::table('tm_peminjaman')
-            ->selectRaw("IFNULL(MAX(SUBSTRING(pb_id, 10, 3)), 0) + 1 AS no_urut")
-            ->whereRaw("SUBSTRING(pb_id, 3, 4) = ?", [$thn_sekarang])
-            ->whereRaw("SUBSTRING(pb_id, 7, 2) = ?", [$bln_sekarang])
+        $tahunSekarang = date('Y');
+        $bulanSekarang = date('m');
+        
+        $noUrutBaru = DB::table('peminjaman')
+            ->select(DB::raw("IFNULL(MAX(SUBSTRING(peminjaman_id, 7, 4)), 0) + 1 AS no_urut"))
+            ->where(DB::raw("SUBSTRING(peminjaman_id, 3, 4)"), $tahunSekarang)
+            ->where(DB::raw("SUBSTRING(peminjaman_id, 5, 2)"), $bulanSekarang)
             ->value('no_urut');
+        
+        $noUrutBaru = str_pad($noUrutBaru, 4, '0', STR_PAD_LEFT);
 
-        $no_urut_padded = str_pad($no_urut, 3, '0', STR_PAD_LEFT);
-        $id_transaksi = 'PJ' . $thn_sekarang . $bln_sekarang . $no_urut_padded;
+        $peminjamanId = "PJ" . $tahunSekarang . $bulanSekarang . $noUrutBaru;
+        
 
-        DB::table('tm_peminjaman')->insert([
-            'pb_id' => $id_transaksi,
-            'user_id' => $user->user_id,
-            'pb_tgl' => $validated['pb_tgl'],
-            'pb_no_siswa' => $validated['pb_no_siswa'],
-            'pb_nama_siswa' => $validated['pb_nama_siswa'],
-            'pb_harus_kembali_tgl' => $validated['pb_harus_kembali_tgl'],
-            'pb_stat' => $validated['pb_stat'],
+        $user_id = Auth::user()->user_id;
+
+        DB::table('peminjaman')->insert([
+            'peminjaman_id' => $peminjamanId,
+            'siswa_id' => $request->siswa_id,
+            'user_id' => $user_id,
+            'tanggal_pinjam' => $request->tanggal_pinjam,
+            'harus_kembali_tgl' => $request->harus_kembali_tgl,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
+        $dataPeminjaman = DB::table('peminjaman')->get();
+
         return response()->json([
-            'message' => 'Transaksi peminjaman berhasil ditambahkan',
-            'pb_id' => $id_transaksi,
-        ], 200);
+            'message' => 'Peminjaman berhasil ditambahkan',
+            'data' => $dataPeminjaman,
+        ], 201);
     }
+    public function index()
+    {
+        $peminjaman = Peminjaman::with(['siswa', 'user'])->get();
+        return response()->json($peminjaman);
+    }
+    public function show($id)
+    {
+        $peminjaman = Peminjaman::find($id);
+
+        if (!$peminjaman) {
+            return response()->json(['message' => 'Peminjaman tidak ditemukan'], 404);
+        }
+
+        return response()->json($peminjaman);
+    }
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'siswa_id' => 'required|exists:siswa,id',
+            'user_id' => 'required|exists:user,id',
+            'tanggal_pinjam' => 'required|date',
+            'harus_kembali_tgl' => 'required|date|after_or_equal:tanggal_pinjam',
+        ]);
+
+        $peminjaman = Peminjaman::find($id);
+
+        if (!$peminjaman) {
+            return response()->json(['message' => 'Peminjaman tidak ditemukan'], 404);
+        }
+
+        $peminjaman->siswa_id = $request->siswa_id;
+        $peminjaman->user_id = $request->user_id;
+        $peminjaman->tanggal_pinjam = $request->tanggal_pinjam;
+        $peminjaman->harus_kembali_tgl = $request->harus_kembali_tgl;
+        $peminjaman->save();
+
+        return response()->json(['message' => 'Peminjaman berhasil diperbarui', 'data' => $peminjaman]);
+    }
+    public function destroy($id)
+    {
+        $peminjaman = Peminjaman::find($id);
+
+        if (!$peminjaman) {
+            return response()->json(['message' => 'Peminjaman tidak ditemukan'], 404);
+        }
+
+        $peminjaman->delete();
+
+        return response()->json(['message' => 'Peminjaman berhasil dihapus']);
+    }
+
 }
