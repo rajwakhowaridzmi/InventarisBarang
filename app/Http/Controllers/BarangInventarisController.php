@@ -57,11 +57,19 @@ class BarangInventarisController extends Controller
         ], 201);
     }
 
-    public function index()
-    {
-        $barang = BarangInventaris::with(['jenisBarang', 'user', 'asal'])->get();
-        return response()->json($barang);
+    public function index(Request $request)
+{
+    $barang = BarangInventaris::with(['jenisBarang', 'user', 'asal'])->get();
+    
+    // Cek jika parameter 'view' ada di query string
+    if ($request->query('view') === 'laporan') {
+        return view('livewire.laporan.laporan-daftar-barang', compact('barang'));
     }
+
+    // Jika tidak, tampilkan tampilan default
+    return view('livewire.barang-inventaris.daftar-barang', compact('barang'));
+}
+
 
     public function show($id)
     {

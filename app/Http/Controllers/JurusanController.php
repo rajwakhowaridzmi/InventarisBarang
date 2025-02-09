@@ -10,29 +10,25 @@ class JurusanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            // 'jurusan_id' => 'required|string|max:20|unique:jurusan,jurusan_id',
             'nama_jurusan' => 'required|string|max:50',
         ]);
 
         $jurusan = Jurusan::create([
-            // 'jurusan_id' => $request->jurusan_id,
             'nama_jurusan' => $request->nama_jurusan,
         ]);
 
-        return response()->json([
-            'message' => 'Data Jurusan Berhasil ditambahkan',
-            'data' => $jurusan,
-        ], 201);
+        return redirect()->route('jurusan.index')->with('succes', 'Data Berhasil ditambahkan');
+        // return response()->json([
+        //     'message' => 'Data Jurusan Berhasil ditambahkan',
+        //     'data' => $jurusan,
+        // ], 201);
     }
 
     public function index()
     {
         $jurusan = Jurusan::all(); // Mengambil semua data dari tabel jurusan
 
-        return response()->json([
-            'message' => 'Data jurusan berhasil diambil',
-            'data' => $jurusan,
-        ], 200);
+        return view('livewire.siswa.jurusan', compact('jurusan'));
     }
 
     // public function show($id)
@@ -52,49 +48,34 @@ class JurusanController extends Controller
     // }
 
     public function update(Request $request, $jurusan_id)
-{
-    // Cari data jurusan berdasarkan jurusan_id
-    $jurusan = Jurusan::find($jurusan_id);
+    {
+        $jurusan = Jurusan::find($jurusan_id);
 
-    // Jika data tidak ditemukan, kembalikan response 404
-    if (!$jurusan) {
-        return response()->json([
-            'message' => 'Data jurusan tidak ditemukan',
-        ], 404);
+        if (!$jurusan) {
+            return redirect()->route('jurusan.index')->with('error', 'Data jurusan tidak ditemukan');
+        }
+
+        $request->validate([
+            'nama_jurusan' => 'required|string|max:50',
+        ]);
+
+        $jurusan->update([
+            'nama_jurusan' => $request->nama_jurusan,
+        ]);
+
+        return redirect()->route('jurusan.index')->with('success', 'Data jurusan berhasil diupdate');
     }
-
-    // Validasi input, hanya menerima nama_jurusan
-    $request->validate([
-        'nama_jurusan' => 'required|string|max:50',
-    ]);
-
-    // Update data jurusan
-    $jurusan->update([
-        'nama_jurusan' => $request->nama_jurusan,
-    ]);
-
-    // Kembalikan response dengan data yang diperbarui
-    return response()->json([
-        'message' => 'Data jurusan berhasil diupdate',
-        'data' => $jurusan,
-    ], 200);
-}
-
 
     public function destroy($id)
     {
         $jurusan = Jurusan::find($id);
 
         if (!$jurusan) {
-            return response()->json([
-                'message' => 'Data jurusan tidak ditemukan',
-            ], 404);
+            return redirect()->route('jurusan.index')->with('error', 'Data jurusan tidak ditemukan');
         }
 
         $jurusan->delete();
 
-        return response()->json([
-            'message' => 'Data jurusan berhasil dihapus',
-        ], 200);
+        return redirect()->route('jurusan.index')->with('success', 'Data jurusan berhasil dihapus');
     }
 }

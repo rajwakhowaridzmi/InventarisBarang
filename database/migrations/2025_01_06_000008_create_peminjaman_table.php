@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->date('tanggal_pinjam')->nullable();
             $table->dateTime('harus_kembali_tgl')->nullable();
+            $table->enum('peminjaman_status',['0', '1'])->nullable(); 
             $table->timestamps();
             
             $table->foreign('siswa_id')->references('siswa_id')->on('siswa')->onDelete('cascade');

@@ -19,13 +19,14 @@ class PeminjamanBarang extends Model
         'peminjaman_id',
         'barang_kode',
         'status_pmj',
+        'tanggal_entry'
     ];
     public function peminjaman()
     {
-        return $this->belongsTo(Peminjaman::class, 'peminjaman_id');
+        return $this->belongsTo(Peminjaman::class, 'peminjaman_id', 'peminjaman_id');
     }
     public function barangInventaris()
     {
-        return $this->belongsTo(BarangInventaris::class, 'barang_kode');
+        return $this->belongsTo(BarangInventaris::class, 'barang_kode', 'barang_kode');
     }
 }

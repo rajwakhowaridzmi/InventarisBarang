@@ -39,4 +39,5 @@ class BarangInventaris extends Model
     {
         return $this->belongsTo(Asal::class, 'asal_id');
     }
+    
 }

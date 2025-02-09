@@ -64,13 +64,14 @@ Route::middleware('auth:sanctum')->prefix('asal-barang')->group(function() {
     Route::delete('/delete/{id}', [AsalBarangController::class, 'destroy']);
 });
 
-Route::middleware('auth:sanctum')->prefix('barang-inventaris')->group(function() {
-    Route::post('/create', [BarangInventarisController::class, 'store']);
-    Route::get('/read', [BarangInventarisController::class, 'index']); 
-    Route::get('/read/{barang_kode}', [BarangInventarisController::class, 'show']); 
-    Route::put('/update/{barang_kode}', [BarangInventarisController::class, 'update']); 
-    Route::delete('/delete/{barang_kode}', [BarangInventarisController::class, 'destroy']);
-});
+// Route::middleware('auth:sanctum')->prefix('barang-inventaris')->group(function() {
+//     Route::post('/create', [BarangInventarisController::class, 'store']);
+//     Route::get('/read', [BarangInventarisController::class, 'index']); 
+//     Route::get('/read/{barang_kode}', [BarangInventarisController::class, 'show']); 
+//     Route::put('/update/{barang_kode}', [BarangInventarisController::class, 'update']); 
+//     Route::delete('/delete/{barang_kode}', [BarangInventarisController::class, 'destroy']);
+// });
+Route::get('/barang-inventaris/read', [BarangInventarisController::class, 'index']);
 
 Route::middleware('auth:sanctum')->prefix('peminjaman')->group(function(){
     Route::post('/create', [PeminjamanController::class, 'store']);

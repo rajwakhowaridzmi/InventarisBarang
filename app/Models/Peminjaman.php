@@ -19,6 +19,7 @@ class Peminjaman extends Model
         'user_id',
         'tanggal_pinjam',
         'harus_kembali_tgl',
+        'peminjaman_status'
     ];
     public function siswa()
     {
@@ -29,5 +30,8 @@ class Peminjaman extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    
+    public function barang_inventaris()
+    {
+        return $this->hasMany(BarangInventaris::class, 'barang_kode', 'barang_kode');
+    }
 }

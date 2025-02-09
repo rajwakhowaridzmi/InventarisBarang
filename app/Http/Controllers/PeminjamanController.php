@@ -16,6 +16,8 @@ class PeminjamanController extends Controller
             // 'user_id' => 'required|exists:user,id',
             'tanggal_pinjam' => 'required|date',
             'harus_kembali_tgl' => 'required|date|after_or_equal:tanggal_pinjam',
+            'peminjaman_status' => 'required|in:0,1',
+
         ]);
 
         $tahunSekarang = date('Y');
