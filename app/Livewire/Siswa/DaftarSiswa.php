@@ -10,19 +10,23 @@ class DaftarSiswa extends Component
     public $siswa_id;
     public function render()
     {
-        $siswas = Siswa::all(); 
+        $siswas = Siswa::all();
         return view('livewire.siswa.daftar-siswa', ['siswa' => $siswas]);
     }
-        public function delete($siswa_id)
-        {
-            $siswa = Siswa::find($siswa_id);
+    public function confirmDelete($siswa_id){
+        $this->siswa_id = $siswa_id;
+    }
+    public function delete($siswa_id)
+    {
+        $siswa = Siswa::find($siswa_id);
 
-            if (!$siswa) {
-                session()->flash('error', 'Siswa tidak ditemukan.');
-                return;
-            }
+        if ($siswa) {
             $siswa->delete();
-
-            session()->flash('success', 'Data jurusan berhasil dihapus.');
+            session()->flash('success', 'Data Siswa berhasil dihapus.');
         }
+
+        $this->siswa_id = null;
+
+        $this->dispatch('closeModal');
+    }
 }

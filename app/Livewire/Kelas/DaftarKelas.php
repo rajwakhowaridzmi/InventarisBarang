@@ -16,17 +16,20 @@ class DaftarKelas extends Component
         $kelass = Kelas::get();
         return view('livewire.kelas.daftar-kelas', ['kelas' => $kelass]);
     }
+    public function confirmDelete($kelas_id){
+        $this->kelas_id = $kelas_id;
+    }
     public function delete($kelas_id)
     {
-        $jurusan = Kelas::find($kelas_id);
+        $kelas = Kelas::find($kelas_id);
 
-        if (!$jurusan) {
-            session()->flash('error', 'Data jurusan tidak ditemukan.');
-            return;
+        if ($kelas) {
+            $kelas->delete();
+            session()->flash('success', 'Data Kelas berhasil dihapus.');
         }
 
-        $jurusan->delete();
+       $this->kelas_id = null;
 
-        session()->flash('success', 'Data jurusan berhasil dihapus.');
+        $this->dispatch('closeModal');
     }
 }

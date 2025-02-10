@@ -95,11 +95,12 @@
                     </div>
                     <!-- Modal Konfirmasi -->
                     <div wire:ignore.self class="modal fade" id="konfirmasiModal" tabindex="-1" aria-labelledby="konfirmasiModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg" style="margin-top: 150px" >
+                        <div class="modal-dialog modal-md" style="margin-top: 150px">
                             <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="konfirmasiModalLabel">Periksa Kelengkapan Barang</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="modal-header flex-column align-items-center">
+                                    <h5 class="modal-title text-center" id="konfirmasiModalLabel">Periksa Kelengkapan Barang</h5>
+                                    <div style="width: 50%; height: 4px; background-color: var(--bs-primary); margin: 5px auto -2px auto; border-radius: 8px;"></div>
+                                    <!-- <button type="button" class="btn-close position-absolute top-0 end-0" data-bs-dismiss="modal" aria-label="Close"></button> -->
                                 </div>
                                 <div class="modal-body">
                                     <ul class="list-group">
@@ -110,9 +111,9 @@
                                         @endforeach
                                     </ul>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Belum</button>
-                                    <button type="button" class="btn btn-primary" wire:click="konfirmasiPengembalian">Sudah</button>
+                                <div class="modal-footer d-flex justify-content-center gap-1">
+                                    <button type="button" class="btn btn-outline-primary flex-fill" data-bs-dismiss="modal">Tidak</button>
+                                    <button type="button" class="btn btn-primary flex-fill" wire:click="konfirmasiPengembalian">Lengkap</button>
                                 </div>
                             </div>
                         </div>

@@ -71,8 +71,8 @@
                                             </div>
                                             
                                             <div class="col-sm-12 text-end">
-                                                <button type="submit" class="btn btn-primary">Tambah</button>
                                                 <a wire:navigate href="/daftar-siswa" class="btn btn-outline-primary">Batal</a>
+                                                <button type="submit" class="btn btn-primary">Tambah</button>
                                             </div>
 
                                         </form><!-- End General Form Elements -->

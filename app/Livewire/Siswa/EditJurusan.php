@@ -3,7 +3,7 @@
 namespace App\Livewire\Siswa;
 
 use Livewire\Component;
-use App\Models\Jurusa;
+use App\Models\Jurusan;
 
 class EditJurusan extends Component
 {

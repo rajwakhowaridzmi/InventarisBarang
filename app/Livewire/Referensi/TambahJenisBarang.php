@@ -37,7 +37,7 @@ class TambahJenisBarang extends Component
             'updated_at' => now(),
         ]);
 
-        session()->flash('message', 'Jenis barang berhasil ditambahkan');
+        session()->flash('success', 'Jenis barang berhasil ditambahkan');
         return redirect()->route('daftar-jenis-barang');
     }
 

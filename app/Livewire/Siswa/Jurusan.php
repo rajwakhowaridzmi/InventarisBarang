@@ -16,17 +16,24 @@ class Jurusan extends Component
 
         return view('livewire.siswa.jurusan', ['jurusan' => $jurusans]);
     }
-    public function delete($jurusan_id)
+    public function confirmDelete($jurusan_id)
     {
-        $jurusan = ModelsJurusan::find($jurusan_id);
+        $this->jurusan_id = $jurusan_id;
+    }
 
-        if (!$jurusan) {
-            session()->flash('error', 'Data jurusan tidak ditemukan.');
-            return;
+    public function delete()
+    {
+        $jurusan = ModelsJurusan::find($this->jurusan_id);
+
+        if ($jurusan) {
+            $jurusan->delete();
+            session()->flash('success', 'Data jurusan berhasil dihapus.');
         }
 
-        $jurusan->delete();
+        // Reset ID setelah penghapusan
+        $this->jurusan_id = null;
 
-        session()->flash('success', 'Data jurusan berhasil dihapus.');
+        // Tutup modal
+        $this->dispatch('closeModal');
     }
 }

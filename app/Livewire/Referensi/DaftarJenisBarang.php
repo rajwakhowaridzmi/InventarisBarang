@@ -14,17 +14,23 @@ class DaftarJenisBarang extends Component
 
         return view('livewire.referensi.daftar-jenis-barang', ['jenis_barang' => $jenis_barangs]);
     }
-    public function delete($jns_brg_kode){
-        $jenis_barang = JenisBarang::find($jns_brg_kode);
+    public function confirmDelete($jns_brg_kode)
+    {
+        $this->jns_brg_kode = $jns_brg_kode;
+    }
+    public function delete(){
+        
+        $jenis_barang = JenisBarang::find($this->jns_brg_kode);
 
-        if (!$jenis_barang) {
-            session()->flash('error', 'Jenis Barang tidak ditemukan.');
-            return;
+        if ($jenis_barang) {
+            $jenis_barang->delete();
+            session()->flash('success', 'Jenis Barang berhasil dihapus.');
         }
 
-        $jenis_barang->delete();
+        // Reset ID setelah penghapusan
+        $this->jns_brg_kode = null;
 
-        session()->flash('success', 'Jenis Barang berhasil dihapus.');
-
+        // Tutup modal
+        $this->dispatch('closeModal');
     }
 }

@@ -104,25 +104,21 @@
                                 </div>
 
                                 <div class="card-body">
-                                    <h5 class="card-title">Reports <span>/ Last 30 Days</span></h5>
+                                    <h5 class="card-title">Reports <span>/ 30 Hari Terakhir</span></h5>
                                     <div id="reportsChart"></div>
                                     <script>
                                         document.addEventListener("DOMContentLoaded", () => {
-                                            // Ambil data chart dari Livewire
-                                            const chartData = JSON.parse('{!! addslashes(json_encode($chartData)) !!}');
+                                            let chartData = JSON.parse('{!! addslashes(json_encode($chartData)) !!}');
                                             console.log(chartData);
 
-                                            // Render chart menggunakan ApexCharts
                                             new ApexCharts(document.querySelector("#reportsChart"), {
                                                 series: [{
-                                                        name: 'Peminjaman',
-                                                        data: chartData.peminjaman, // Data peminjaman
-                                                    },
-                                                    {
-                                                        name: 'Pengembalian',
-                                                        data: chartData.pengembalian, // Data pengembalian
-                                                    },
-                                                ],
+                                                    name: 'Peminjaman',
+                                                    data: chartData.peminjaman, // Data peminjaman dari Livewire
+                                                }, {
+                                                    name: 'Pengembalian',
+                                                    data: chartData.pengembalian // Data pengembalian dari Livewire
+                                                }],
                                                 chart: {
                                                     height: 350,
                                                     type: 'area',
@@ -133,37 +129,36 @@
                                                 markers: {
                                                     size: 4
                                                 },
-                                                colors: ['#4154f1', '#2eca6a'], // Warna garis
+                                                colors: ['#4154f1', '#2eca6a'],
                                                 fill: {
                                                     type: "gradient",
                                                     gradient: {
                                                         shadeIntensity: 1,
                                                         opacityFrom: 0.3,
                                                         opacityTo: 0.4,
-                                                        stops: [0, 90, 100],
-                                                    },
+                                                        stops: [0, 90, 100]
+                                                    }
                                                 },
                                                 dataLabels: {
                                                     enabled: false
                                                 },
                                                 stroke: {
                                                     curve: 'smooth',
-                                                    width: 2,
+                                                    width: 2
                                                 },
                                                 xaxis: {
-                                                    type: 'category', // Sesuaikan tipe x-axis ke kategori
-                                                    categories: chartData.categories, // Data kategori tanggal
+                                                    type: 'date',
+                                                    categories: chartData.categories // Format tanggal dari Livewire
                                                 },
                                                 tooltip: {
                                                     x: {
                                                         format: 'yyyy-MM-dd'
-                                                    }, // Format tanggal
-                                                },
+                                                    },
+                                                }
                                             }).render();
                                         });
                                     </script>
                                 </div>
-
 
                             </div>
                         </div><!-- End Reports -->

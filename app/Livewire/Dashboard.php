@@ -14,43 +14,44 @@ class Dashboard extends Component
     public $totalBarang, $totalPengembalian, $totalPeminjaman, $totalSiswa, $chartData;
 
     public function mount()
-    {
-        // Hitung total data
-        $this->totalBarang = BarangInventaris::count();
-        $this->totalSiswa = Siswa::count();
-        $this->totalPeminjaman = Peminjaman::count();
-        $this->totalPengembalian = Pengembalian::count();
+{
+    // Hitung total data
+    $this->totalBarang = BarangInventaris::count();
+    $this->totalSiswa = Siswa::count();
+    $this->totalPeminjaman = Peminjaman::count();
+    $this->totalPengembalian = Pengembalian::count();
 
-        // Ambil data peminjaman untuk 30 hari terakhir
-        $peminjamanData = Peminjaman::where('created_at', '>=', now()->subDays(30))
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as total'))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+    // Ambil data peminjaman untuk 30 hari terakhir berdasarkan kolom tanggal_pinjam
+    $peminjamanData = Peminjaman::where('tanggal_pinjam', '>=', now()->subDays(30))
+        ->select(DB::raw('DATE(tanggal_pinjam) as date'), DB::raw('count(*) as total'))
+        ->groupBy('date')
+        ->orderBy('date')
+        ->get();
 
-        // Ambil data pengembalian untuk 30 hari terakhir
-        $pengembalianData = Pengembalian::where('created_at', '>=', now()->subDays(30))
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as total'))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+    // Ambil data pengembalian untuk 30 hari terakhir berdasarkan kolom tanggal_kembali
+    $pengembalianData = Pengembalian::where('tanggal_kembali', '>=', now()->subDays(30))
+        ->select(DB::raw('DATE(tanggal_kembali) as date'), DB::raw('count(*) as total'))
+        ->groupBy('date')
+        ->orderBy('date')
+        ->get();
 
-        // Gabungkan kategori tanggal untuk menghindari ketidaksesuaian
-        $categories = collect(array_merge(
-            $peminjamanData->pluck('date')->toArray(),
-            $pengembalianData->pluck('date')->toArray()
-        ))->unique()->sort()->values();
+    // Gabungkan kategori tanggal untuk menghindari ketidaksesuaian
+    $categories = collect(array_merge(
+        $peminjamanData->pluck('date')->toArray(),
+        $pengembalianData->pluck('date')->toArray()
+    ))->unique()->sort()->values();
 
-        // Map data peminjaman dan pengembalian ke kategori tanggal
-        $peminjamanMapped = $categories->map(fn($date) => $peminjamanData->firstWhere('date', $date)->total ?? 0);
-        $pengembalianMapped = $categories->map(fn($date) => $pengembalianData->firstWhere('date', $date)->total ?? 0);
+    // Map data peminjaman dan pengembalian ke kategori tanggal
+    $peminjamanMapped = $categories->map(fn($date) => $peminjamanData->firstWhere('date', $date)->total ?? 0);
+    $pengembalianMapped = $categories->map(fn($date) => $pengembalianData->firstWhere('date', $date)->total ?? 0);
 
-        $this->chartData = [
-            'categories' => $categories,
-            'peminjaman' => $peminjamanMapped,
-            'pengembalian' => $pengembalianMapped,
-        ];
-    }
+    $this->chartData = [
+        'categories' => $categories,
+        'peminjaman' => $peminjamanMapped,
+        'pengembalian' => $pengembalianMapped,
+    ];
+}
+
     public function render()
     {
         return view('livewire.dashboard', [
